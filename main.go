@@ -3,18 +3,26 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"path"
+
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo"
 )
 
-func about(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("halaman about"))
-}
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Selamat Datang")
-	})
+	fmt.Println("Go Program")
+	server := echo.New()
+	server.GET(path.Join("/"), Version)
 
-	http.HandleFunc("/about", about)
+	godotenv.Load()
+	port := os.Getenv("PORT")
 
-	http.ListenAndServe(":3000", nil)
+	address := fmt.Sprintf("%s:%s", "0.0.0.0", port)
+	fmt.Println(address)
+	server.Start(address)
 
+}
+func Version(context echo.Context) error {
+	return context.JSON(http.StatusOK, map[string]interface{}{"version": 1})
 }
